@@ -281,6 +281,7 @@ public class ThreadDatabase extends Database {
   public void deleteConversation(long threadId) {
     DatabaseFactory.getSmsDatabase(context).deleteThread(threadId);
     DatabaseFactory.getMmsDatabase(context).deleteThread(threadId);
+    DatabaseFactory.getDraftDatabase(context).clearDrafts(threadId);
     deleteThread(threadId);
     notifyConversationListeners(threadId);
     notifyConversationListListeners();
