@@ -891,13 +891,18 @@ public class ConversationActivity extends PassphraseRequiredSherlockFragmentActi
   }
 
   private void saveDraft() {
-    if (this.threadId <= 0 || this.recipients == null || this.recipients.isEmpty())
+    if (this.recipients == null || this.recipients.isEmpty())
       return;
+
+    if (this.threadId <= 0)
+      this.threadId = DatabaseFactory.getThreadDatabase(this).getThreadIdFor(getRecipients(), distributionType);
 
     final List<Draft> drafts = getDraftsForCurrentState();
 
-    if (drafts.size() <= 0)
+    if (drafts.size() <= 0) {
+      DatabaseFactory.getThreadDatabase(ConversationActivity.this).update(threadId);
       return;
+    }
 
     final long thisThreadId             = this.threadId;
     final MasterSecret thisMasterSecret = this.masterSecret.parcelClone();
@@ -915,6 +920,7 @@ public class ConversationActivity extends PassphraseRequiredSherlockFragmentActi
       protected Void doInBackground(Void... params) {
         MasterCipher masterCipher = new MasterCipher(thisMasterSecret);
         DatabaseFactory.getDraftDatabase(ConversationActivity.this).insertDrafts(masterCipher, thisThreadId, drafts);
+        DatabaseFactory.getThreadDatabase(ConversationActivity.this).update(thisThreadId);
         MemoryCleaner.clean(thisMasterSecret);
         return null;
       }

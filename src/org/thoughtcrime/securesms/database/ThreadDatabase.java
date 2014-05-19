@@ -369,9 +369,11 @@ public class ThreadDatabase extends Database {
 
   public void update(long threadId) {
     MmsSmsDatabase mmsSmsDatabase = DatabaseFactory.getMmsSmsDatabase(context);
+    DraftDatabase draftDatabase   = DatabaseFactory.getDraftDatabase(context);
     long count                    = mmsSmsDatabase.getConversationCount(threadId);
+    long draftCount               = draftDatabase.getDraftCountForThread(threadId);
 
-    if (count == 0) {
+    if (count == 0 && draftCount == 0) {
       deleteThread(threadId);
       notifyConversationListListeners();
       return;
@@ -385,6 +387,8 @@ public class ThreadDatabase extends Database {
 
       if (reader != null && (record = reader.getNext()) != null) {
         updateThread(threadId, count, record.getBody().getBody(), record.getDateReceived(), record.getType());
+      } else if (draftCount > 0) {
+        updateThread(threadId, count, "", System.currentTimeMillis(), 0);
       } else {
         deleteThread(threadId);
       }

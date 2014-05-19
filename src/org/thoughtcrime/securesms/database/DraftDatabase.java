@@ -50,6 +50,24 @@ public class DraftDatabase extends Database {
     db.delete(TABLE_NAME, THREAD_ID + " = ?", new String[] {threadId+""});
   }
 
+  public int getDraftCountForThread(long threadId) {
+    SQLiteDatabase db = databaseHelper.getReadableDatabase();
+    Cursor cursor     = null;
+
+    try {
+      cursor = db.query(TABLE_NAME, new String[] {"COUNT(*)"}, THREAD_ID + " = ?",
+              new String[] {threadId+""}, null, null, null);
+
+      if (cursor != null && cursor.moveToFirst())
+        return cursor.getInt(0);
+    } finally {
+      if (cursor != null)
+        cursor.close();
+    }
+
+    return 0;
+  }
+
   public List<Draft> getDrafts(MasterCipher masterCipher, long threadId) {
     SQLiteDatabase db   = databaseHelper.getReadableDatabase();
     List<Draft> results = new LinkedList<Draft>();
