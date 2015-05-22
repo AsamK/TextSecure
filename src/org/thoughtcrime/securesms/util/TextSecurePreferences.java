@@ -171,7 +171,7 @@ public class TextSecurePreferences {
   }
 
   public static void setGcmRegistrationId(Context context, String registrationId) {
-    setStringPreference(context, GCM_REGISTRATION_ID_PREF, registrationId);
+    setStringPreferenceBlocking(context, GCM_REGISTRATION_ID_PREF, registrationId);
     setIntegerPrefrence(context, GCM_REGISTRATION_ID_VERSION_PREF, Util.getCurrentApkReleaseVersion(context));
   }
 
@@ -520,6 +520,10 @@ public class TextSecurePreferences {
 
   public static boolean getBooleanPreference(Context context, String key, boolean defaultValue) {
     return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
+  }
+
+  public static void setStringPreferenceBlocking(Context context, String key, String value) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit().putString(key, value).commit();
   }
 
   public static void setStringPreference(Context context, String key, String value) {

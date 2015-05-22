@@ -21,6 +21,8 @@ import org.thoughtcrime.securesms.database.NoExternalStorageException;
 import org.thoughtcrime.securesms.database.PlaintextBackupImporter;
 import org.thoughtcrime.securesms.service.ApplicationMigrationService;
 import org.thoughtcrime.securesms.service.KeyCachingService;
+import org.thoughtcrime.securesms.util.ImportEncryptedBackupTask;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.io.IOException;
 
@@ -111,7 +113,7 @@ public class ImportFragment extends Fragment {
     builder.setPositiveButton(getActivity().getString(R.string.ImportFragment_restore), new AlertDialog.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
-        new ImportEncryptedBackupTask().execute();
+        new ImportEncryptedBackupTask(getActivity()).execute();
       }
     });
     builder.setNegativeButton(getActivity().getString(R.string.ImportFragment_cancel), null);
@@ -184,63 +186,5 @@ public class ImportFragment extends Fragment {
         return ERROR_IO;
       }
     }
-}
-
-  private class ImportEncryptedBackupTask extends AsyncTask<Void, Void, Integer> {
-
-    @Override
-    protected void onPreExecute() {
-      progressDialog = ProgressDialog.show(getActivity(),
-                                           getActivity().getString(R.string.ImportFragment_restoring),
-                                           getActivity().getString(R.string.ImportFragment_restoring_encrypted_backup),
-                                           true, false);
-    }
-
-    protected void onPostExecute(Integer result) {
-      Context context = getActivity();
-
-      if (progressDialog != null)
-        progressDialog.dismiss();
-
-      if (context == null)
-        return;
-
-      switch (result) {
-        case NO_SD_CARD:
-          Toast.makeText(context,
-                         context.getString(R.string.ImportFragment_no_encrypted_backup_found),
-                         Toast.LENGTH_LONG).show();
-          break;
-        case ERROR_IO:
-          Toast.makeText(context,
-                         context.getString(R.string.ImportFragment_error_importing_backup),
-                         Toast.LENGTH_LONG).show();
-          break;
-        case SUCCESS:
-          DatabaseFactory.getInstance(context).reset(context);
-          Intent intent = new Intent(context, KeyCachingService.class);
-          intent.setAction(KeyCachingService.CLEAR_KEY_ACTION);
-          context.startService(intent);
-
-          Toast.makeText(context,
-                         context.getString(R.string.ImportFragment_restore_complete),
-                         Toast.LENGTH_LONG).show();
-      }
-    }
-
-    @Override
-    protected Integer doInBackground(Void... params) {
-      try {
-        EncryptedBackupExporter.importFromSd(getActivity());
-        return SUCCESS;
-      } catch (NoExternalStorageException e) {
-        Log.w("ImportFragment", e);
-        return NO_SD_CARD;
-      } catch (IOException e) {
-        Log.w("ImportFragment", e);
-        return ERROR_IO;
-      }
-    }
   }
-
 }

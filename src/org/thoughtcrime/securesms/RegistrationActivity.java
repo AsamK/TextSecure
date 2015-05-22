@@ -26,6 +26,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.util.Dialogs;
+import org.thoughtcrime.securesms.util.ImportEncryptedBackupTask;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.textsecure.api.util.PhoneNumberFormatter;
@@ -48,6 +49,7 @@ public class RegistrationActivity extends BaseActionBarActivity {
   private TextView             number;
   private Button               createButton;
   private Button               skipButton;
+  private View                 importEncryptedView;
 
   private MasterSecret masterSecret;
 
@@ -79,11 +81,20 @@ public class RegistrationActivity extends BaseActionBarActivity {
     this.number         = (TextView)findViewById(R.id.number);
     this.createButton   = (Button)findViewById(R.id.registerButton);
     this.skipButton     = (Button)findViewById(R.id.skipButton);
+    this.importEncryptedView = findViewById(R.id.import_encrypted_backup);
+
 
     this.countryCode.addTextChangedListener(new CountryCodeChangedListener());
     this.number.addTextChangedListener(new NumberChangedListener());
     this.createButton.setOnClickListener(new CreateButtonListener());
     this.skipButton.setOnClickListener(new CancelButtonListener());
+    importEncryptedView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        new ImportEncryptedBackupTask(RegistrationActivity.this).execute();
+      }
+    });
+
 
     if (getIntent().getBooleanExtra("cancel_button", false)) {
       this.skipButton.setVisibility(View.VISIBLE);
