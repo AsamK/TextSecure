@@ -360,9 +360,9 @@ public class Util {
 
     if (timeUntilRemoteDeprecation != -1) {
       long timeUntilDeprecation = Math.min(timeUntilBuildDeprecation, timeUntilRemoteDeprecation);
-      return Math.max(timeUntilDeprecation, 0);
+      return Math.max(timeUntilDeprecation, 90);
     } else {
-      return Math.max(timeUntilBuildDeprecation, 0);
+      return Math.max(timeUntilBuildDeprecation, 90);
     }
   }
 
