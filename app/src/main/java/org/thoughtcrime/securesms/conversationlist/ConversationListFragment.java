@@ -163,7 +163,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
   private static final String TAG = Log.tag(ConversationListFragment.class);
 
-  private static final int MAXIMUM_PINNED_CONVERSATIONS = 4;
+  private static final int MAXIMUM_PINNED_CONVERSATIONS = 8;
 
   private ActionMode                        actionMode;
   private ConstraintLayout                  constraintLayout;
