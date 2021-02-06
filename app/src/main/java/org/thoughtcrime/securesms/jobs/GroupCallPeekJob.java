@@ -26,8 +26,8 @@ public final class GroupCallPeekJob extends BaseJob {
     JobManager         jobManager = ApplicationDependencies.getJobManager();
     String             queue      = QUEUE + groupRecipientId.serialize();
     Parameters.Builder parameters = new Parameters.Builder()
-                                                  .setQueue(queue)
-                                                  .addConstraint(DecryptionsDrainedConstraint.KEY);
+                                                  .setQueue(queue);
+//                                                  .addConstraint(DecryptionsDrainedConstraint.KEY);
 
     jobManager.cancelAllInQueue(queue);
 
