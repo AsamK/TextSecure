@@ -81,7 +81,7 @@ public class AttachmentUtil {
                                                  .size();
 
     if (attachmentCount <= 1) {
-      SignalDatabase.messages().deleteMessage(mmsId);
+      SignalDatabase.messages().deleteAttachmentsOnly(mmsId);
     } else {
       SignalDatabase.attachments().deleteAttachment(attachmentId);
     }
