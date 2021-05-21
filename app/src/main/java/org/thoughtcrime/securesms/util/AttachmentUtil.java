@@ -100,7 +100,7 @@ public class AttachmentUtil {
     MessageRecord deletedMessageRecord = null;
     if (attachmentCount <= 1) {
       deletedMessageRecord = SignalDatabase.messages().getMessageRecordOrNull(mmsId);
-      SignalDatabase.messages().deleteMessage(mmsId);
+      SignalDatabase.messages().deleteAttachmentsOnly(mmsId);
     } else {
       SignalDatabase.attachments().deleteAttachment(attachmentId);
     }

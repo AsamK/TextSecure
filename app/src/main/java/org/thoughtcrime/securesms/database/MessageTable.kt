@@ -3292,6 +3292,13 @@ open class MessageTable(context: Context?, databaseHelper: SignalDatabase) : Dat
     return threadDeleted
   }
 
+  fun deleteAttachmentsOnly(messageId: Long): Boolean {
+    val threadId = getThreadIdForMessage(messageId)
+    attachments.deleteAttachmentsForMessage(messageId)
+    notifyConversationListeners(threadId)
+    return true;
+  }
+
   fun deleteScheduledMessage(messageId: Long) {
     Log.d(TAG, "deleteScheduledMessage($messageId)")
 
