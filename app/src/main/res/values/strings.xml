@@ -2635,6 +2635,7 @@
     <string name="conversation_context__menu_forward_message">Forward message</string>
     <string name="conversation_context__menu_resend_message">Resend message</string>
     <string name="conversation_context__menu_reply_to_message">Reply to message</string>
+    <string name="conversation_context__menu_select_all">Select all</string>
 
     <!-- conversation_context_reacction -->
     <string name="conversation_context__reaction_multi_select">Select multiple</string>

@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.BindableConversationItem;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.conversation.colors.Colorizable;
 import org.thoughtcrime.securesms.conversation.colors.Colorizer;
+import org.thoughtcrime.securesms.database.MediaDatabase;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.giph.mp4.GiphyMp4Playable;
 import org.thoughtcrime.securesms.giph.mp4.GiphyMp4PlaybackPolicyEnforcer;
@@ -127,6 +128,7 @@ public class ConversationAdapter
   private boolean             isMessageRequestAccepted;
   private ConversationMessage inlineContent;
   private Colorizer           colorizer;
+  private boolean             isSelectAllActive;
 
   ConversationAdapter(@NonNull LifecycleOwner lifecycleOwner,
                       @NonNull GlideRequests glideRequests,
@@ -376,6 +378,10 @@ public class ConversationAdapter
   }
 
   public @Nullable ConversationMessage getItem(int position) {
+    return getItem(position, true);
+  }
+
+  public @Nullable ConversationMessage getItem(int position, boolean requestMore) {
     position = hasHeader() ? position - 1 : position;
 
     if (position == -1) {
@@ -384,16 +390,16 @@ public class ConversationAdapter
       return fastRecords.get(position);
     } else {
       int correctedPosition = position - fastRecords.size();
-      if (pagingController != null) {
+      if (pagingController != null && requestMore) {
         pagingController.onDataNeededAroundIndex(correctedPosition);
       }
       return super.getItem(correctedPosition);
     }
   }
 
-  public void submitList(@Nullable List<ConversationMessage> pagedList) {
+  public void submitList(@Nullable List<ConversationMessage> pagedList, @Nullable final Runnable commitCallback) {
     cleanFastRecords();
-    super.submitList(pagedList);
+    super.submitList(pagedList, commitCallback);
   }
 
   public void setPagingController(@Nullable PagingController pagingController) {
@@ -557,13 +563,40 @@ public class ConversationAdapter
    * Clears all selected records from multi-select mode.
    */
   void clearSelection() {
+    isSelectAllActive = false;
     selected.clear();
+  }
+
+  /**
+   * Select all records from currently loaded pages.
+   */
+  void selectAllMessages() {
+    isSelectAllActive = true;
+    int count = getItemCount();
+    boolean requestMore = true;
+    for (int i = 0; i < count; i++) {
+      if (isHeaderPosition(i) || isFooterPosition(i)) {
+        continue;
+      }
+      final ConversationMessage item = getItem(i, requestMore);
+      if (item == null) {
+        requestMore = false;
+        continue;
+      }
+      selected.add(item);
+    }
+    this.notifyDataSetChanged();
+  }
+
+  boolean isSelectAllActive() {
+    return isSelectAllActive;
   }
 
   /**
    * Toggles the selected state of a record in multi-select mode.
    */
   void toggleSelection(ConversationMessage conversationMessage) {
+    isSelectAllActive = false;
     if (selected.contains(conversationMessage)) {
       selected.remove(conversationMessage);
     } else {

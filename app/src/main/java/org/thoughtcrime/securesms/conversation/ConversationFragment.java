@@ -293,7 +293,11 @@ public class ConversationFragment extends LoggingFragment {
     conversationViewModel.getMessages().observe(getViewLifecycleOwner(), messages -> {
       ConversationAdapter adapter = getListAdapter();
       if (adapter != null) {
-        getListAdapter().submitList(messages);
+        adapter.submitList(messages, () -> {
+          if (adapter.isSelectAllActive()) {
+            handleSelectAllMessages();
+          }
+        });
       }
     });
 
@@ -1061,6 +1065,12 @@ public class ConversationFragment extends LoggingFragment {
     Toast.makeText(getActivity(),
                    getResources().getQuantityString(R.plurals.ConversationFragment_error_while_saving_attachments_to_sd_card, 1),
                    Toast.LENGTH_LONG).show();
+  }
+
+  private void handleSelectAllMessages() {
+    getListAdapter().selectAllMessages();
+    setCorrectMenuVisibility(actionMode.getMenu());
+    actionMode.setTitle(String.valueOf(getListAdapter().getSelectedItems().size()));
   }
 
   private void clearHeaderIfNotTyping(ConversationAdapter adapter) {
@@ -1892,6 +1902,8 @@ public class ConversationFragment extends LoggingFragment {
           maybeShowSwipeToReplyTooltip();
           handleReplyMessage(getSelectedConversationMessage());
           actionMode.finish();
+        case R.id.menu_context_select_all:
+          handleSelectAllMessages();
           return true;
       }
 
