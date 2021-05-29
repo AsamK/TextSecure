@@ -3937,7 +3937,7 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     // Threads
     val threadMerge: ThreadTable.MergeResult = threads.merge(primaryId, secondaryId)
     threads.setLastScrolled(threadMerge.threadId, 0)
-    threads.update(threadMerge.threadId, false, false)
+    threads.update(threadMerge.threadId, false)
 
     // Recipient remaps
     for (table in recipientIdDatabaseTables) {

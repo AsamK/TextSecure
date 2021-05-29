@@ -145,6 +145,11 @@ public final class IdentityUtil {
 
       while ((groupRecord = reader.getNext()) != null) {
         if (groupRecord.getMembers().contains(recipientId) && groupRecord.isActive()) {
+          Long threadId = SignalDatabase.threads().getThreadIdFor(groupRecord.getRecipientId());
+          if (threadId == null) {
+            continue;
+          }
+
           IncomingMessage groupUpdate = IncomingMessage.identityUpdate(recipientId, time, groupRecord.getId());
           smsDatabase.insertMessageInbox(groupUpdate);
         }
@@ -153,6 +158,10 @@ public final class IdentityUtil {
       throw new AssertionError(e);
     }
 
+    Long threadId = SignalDatabase.threads().getThreadIdFor(recipientId);
+    if (threadId == null) {
+      return;
+    }
     try {
       IncomingMessage        individualUpdate = IncomingMessage.identityUpdate(recipientId, time, null);
       Optional<InsertResult> insertResult     = smsDatabase.insertMessageInbox(individualUpdate);
