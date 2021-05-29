@@ -49,7 +49,7 @@ class LeaveGroupV2WorkerJob(parameters: Parameters, private val groupId: GroupId
     if (threadId != -1L) {
       SignalDatabase.recipients.setProfileSharing(groupRecipient.id, enabled = false)
       SignalDatabase.threads.setEntireThreadRead(threadId)
-      SignalDatabase.threads.update(threadId, unarchive = false, allowDeletion = false)
+      SignalDatabase.threads.update(threadId, unarchive = false)
       ApplicationDependencies.getMessageNotifier().updateNotification(context)
     }
   }

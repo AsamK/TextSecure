@@ -585,7 +585,7 @@ public class GroupsV2StateProcessor {
         long         threadId    = threadTable.getOrCreateThreadIdFor(groupRecipient);
         long         id          = mmsDatabase.insertMessageOutbox(leaveMessage, threadId, false, null);
         mmsDatabase.markAsSent(id, true);
-        threadTable.update(threadId, false, false);
+        threadTable.update(threadId, false);
       } catch (MmsException e) {
         warn( "Failed to insert leave message.", e);
       }
@@ -822,7 +822,7 @@ public class GroupsV2StateProcessor {
           long            messageId       = mmsDatabase.insertMessageOutbox(outgoingMessage, threadId, false, null);
 
           mmsDatabase.markAsSent(messageId, true);
-          threadTable.update(threadId, false, false);
+          threadTable.update(threadId, false);
         } catch (MmsException e) {
           Log.w(TAG, "Failed to insert outgoing update message!", e);
         }
@@ -834,7 +834,7 @@ public class GroupsV2StateProcessor {
           Optional<MessageTable.InsertResult> insertResult = smsDatabase.insertMessageInbox(groupMessage);
 
           if (insertResult.isPresent()) {
-            SignalDatabase.threads().update(insertResult.get().getThreadId(), false, false);
+            SignalDatabase.threads().update(insertResult.get().getThreadId(), false);
           } else {
             Log.w(TAG, "Could not insert update message");
           }

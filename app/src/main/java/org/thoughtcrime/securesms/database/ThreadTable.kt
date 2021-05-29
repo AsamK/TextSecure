@@ -198,10 +198,11 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
     }
 
     val date = System.currentTimeMillis()
+    val liveRecipient = Recipient.live(recipientId)
     val contentValues = contentValuesOf(
       DATE to date - date % 1000,
       RECIPIENT_ID to recipientId.serialize(),
-      MEANINGFUL_MESSAGES to 0
+      MEANINGFUL_MESSAGES to !liveRecipient.get().isDistributionList
     )
 
     if (group) {
@@ -209,7 +210,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
     }
 
     val result = writableDatabase.insert(TABLE_NAME, null, contentValues)
-    Recipient.live(recipientId).refresh()
+    liveRecipient.refresh()
     return result
   }
 
@@ -248,7 +249,6 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
       SNIPPET_TYPE to type,
       SNIPPET_CONTENT_TYPE to contentType,
       SNIPPET_EXTRAS to extraSerialized,
-      MEANINGFUL_MESSAGES to if (meaningfulMessages) 1 else 0,
       STATUS to status,
       HAS_DELIVERY_RECEIPT to deliveryReceiptCount,
       HAS_READ_RECEIPT to readReceiptCount,
@@ -258,6 +258,9 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
       UNREAD_SELF_MENTION_COUNT to unreadMentionCount,
       SNIPPET_MESSAGE_EXTRAS to messageExtras?.encode()
     )
+    if (meaningfulMessages) {
+      contentValues.put(MEANINGFUL_MESSAGES, 1)
+    }
 
     writableDatabase
       .update(TABLE_NAME)
@@ -1464,7 +1467,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
       val meaningfulMessages = messages.hasMeaningfulMessage(threadId)
 
       val isPinned by lazy { getPinnedThreadIds().contains(threadId) }
-      val shouldDelete by lazy { allowDeletion && !isPinned && !messages.containsStories(threadId) }
+      val shouldDelete = false
 
       if (!meaningfulMessages) {
         if (shouldDelete) {
