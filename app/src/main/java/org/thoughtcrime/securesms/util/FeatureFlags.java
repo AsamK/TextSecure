@@ -375,7 +375,7 @@ public final class FeatureFlags {
 
   /** Internal testing extensions. */
   public static boolean internalUser() {
-    return getBoolean(INTERNAL_USER, false) || Environment.IS_NIGHTLY || Environment.IS_STAGING;
+    return true || getBoolean(INTERNAL_USER, false) || Environment.IS_NIGHTLY || Environment.IS_STAGING;
   }
 
   /** Whether or not to use the UUID in verification codes. */
@@ -483,7 +483,7 @@ public final class FeatureFlags {
 
   /** Max group size that can be use group call ringing. */
   public static long maxGroupCallRingSize() {
-    return getLong(MAX_GROUP_CALL_RING_SIZE, 16);
+    return 16; //getLong(MAX_GROUP_CALL_RING_SIZE, 16);
   }
 
   /** A comma-separated list of country codes where payments should be disabled. */
@@ -497,7 +497,7 @@ public final class FeatureFlags {
    * NOTE: This feature is still under ongoing development, do not enable.
    */
   public static boolean storiesTextFunctions() {
-    return getBoolean(STORIES_TEXT_FUNCTIONS, false);
+    return true;
   }
 
   /** A comma-separated list of models that should *not* use hardware AEC for calling. */
