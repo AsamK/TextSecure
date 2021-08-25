@@ -86,6 +86,7 @@ public final class PhoneNumberPrivacyValues extends SignalStoreValues {
    */
   public Collection<CertificateType> getAllCertificateTypes() {
     return BOTH_CERTIFICATES;
+//    return FeatureFlags.phoneNumberPrivacy() ? BOTH_CERTIFICATES : REGULAR_CERTIFICATE;
   }
 
   public enum PhoneNumberSharingMode {
