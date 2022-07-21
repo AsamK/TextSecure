@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +16,7 @@ public class FiatMoneyTest {
     FiatMoney fiatMoney = new FiatMoney(BigDecimal.valueOf(100), Currency.getInstance("USD"));
 
     // WHEN
-    String result = fiatMoney.getDefaultPrecisionString();
+    String result = fiatMoney.getDefaultPrecisionString(Locale.ROOT);
 
     // THEN
     assertEquals("100.00", result);
